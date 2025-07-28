@@ -21,7 +21,7 @@ function useTheme(): UseThemeHookModel {
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", themeMode === "dark");
-    localStorage.setItem("themeMode", themeMode);
+    localStorage.setItem("theme", themeMode);
   }, [themeMode]);
 
   const toggleTheme = (): void => {
