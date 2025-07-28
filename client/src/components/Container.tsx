@@ -6,7 +6,7 @@ type ContainerProp = {
 
 function Container({ child }: ContainerProp) {
   return (
-    <div className="border border-gray-300 dark:border-gray-700  rounded-lg p-2">
+    <div className="border border-gray-300 dark:border-gray-700  rounded-lg p-2 w-full">
       {child}
     </div>
   );

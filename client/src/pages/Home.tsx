@@ -1,10 +1,12 @@
-import {Container, HomeContent } from "../components";
+import { Container, HomeContent } from "../components";
 
 function Home() {
   return (
-    <>
-      <Container child={<HomeContent />} />
-    </>
+    <div className="w-full h-full flex justify-center items-center">
+      <div className="w-full max-w-2xl">
+        <Container child={<HomeContent />} />
+      </div>
+    </div>
   );
 }
 

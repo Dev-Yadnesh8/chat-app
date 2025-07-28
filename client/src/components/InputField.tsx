@@ -12,7 +12,7 @@ interface InputFieldPorps {
   rightIcon?: ReactNode;
   className?: string;
   iconArialLable?: string;
-  onChange(): void;
+  onChange(e: string): void;
   onClear(): void;
 }
 
@@ -55,7 +55,7 @@ function InputField({
       <input
         type={type}
         value={value}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         onFocus={() => setIsFocused(true)}
         onBlur={() => {
