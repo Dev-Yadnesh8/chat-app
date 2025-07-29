@@ -3,10 +3,10 @@ import Header from "./Header";
 
 function Layout() {
   return (
-    <div className="h-screen w-full font-display bg-gray-50 dark:bg-gray-950 text-black dark:text-gray-50 flex flex-col">
+    <div className="min-h-screen w-full font-display bg-gray-50 dark:bg-gray-950 text-black dark:text-gray-50 flex flex-col">
       <Header />
 
-      <main className="p-4 w-full grow flex justify-center items-center">
+      <main className="flex-1 overflow-y-auto pt-20 p-4 flex justify-center items-center">
         <div className="w-full max-w-6xl">
           <Outlet />
         </div>

@@ -8,12 +8,13 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { Layout } from "./components";
-import { Home } from "./pages";
+import { Chat, Home } from "./pages";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       <Route path="" element={<Home />} />
+      <Route path="chat" element={<Chat />} />
     </Route>
   )
 );

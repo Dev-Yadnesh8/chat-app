@@ -3,23 +3,35 @@ import Button from "./Buttons/Button";
 import InputField from "./InputField";
 import { APPNAME } from "../utils/constants";
 import { generateRoomCode } from "../utils/helper";
-import React, { useState } from "react";
+import { useState } from "react";
 import IconButton from "./Buttons/IconButton";
+import { useNavigate } from "react-router-dom";
 
 function HomeContent() {
   const [roomCode, setRoomCode] = useState("");
   const [input, setInput] = useState("");
+  const navigate = useNavigate();
 
   function handleCreateRoom() {
-    setRoomCode(generateRoomCode());
+    const newCode = generateRoomCode();
+    setRoomCode(newCode);
+    setInput(newCode); // now this will work correctly
   }
 
-  function handleOnChange(val:string) {
+  function handleOnChange(val: string) {
     setInput(val);
   }
 
   function handleOnClear() {
     setInput("");
+  }
+
+  function handleJoinRoom() {
+    if (input.trim() === "" || input.length <= 0) {
+      alert("Please fill required");
+      return;
+    }
+    navigate("chat", { replace: true });
   }
 
   return (
@@ -53,7 +65,8 @@ function HomeContent() {
             </h3>
           </div>
           <IconButton
-            icon={<Clipboard />}
+            icon={<Clipboard className="h-5 w-5" />}
+            
             onClick={() => {
               navigator.clipboard.writeText(roomCode);
               alert("Room code copied!");
@@ -67,14 +80,13 @@ function HomeContent() {
         <InputField
           value={input}
           onChange={handleOnChange}
-          
           onClear={handleOnClear}
           className="w-full"
           variant="solid"
         />
         <Button
           label="Join Room"
-          onClick={() => {}}
+          onClick={handleJoinRoom}
           className="w-full max-w-28"
         />
       </div>
