@@ -5,6 +5,7 @@ import Button from "./Buttons/Button";
 import InputField from "./InputField";
 import HomeContent from "./HomeContent";
 import ChatContent from "./ChatContent";
+import Message from "./Message";
 
 export {
   Layout,
@@ -14,4 +15,5 @@ export {
   InputField,
   HomeContent,
   ChatContent,
+  Message,
 };

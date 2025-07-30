@@ -1,21 +1,34 @@
 import { MessageCircle, Clipboard } from "lucide-react";
 import Button from "./Buttons/Button";
 import InputField from "./InputField";
-import { APPNAME } from "../utils/constants";
+import { APPNAME, type SocketModel } from "../utils/constants";
 import { generateRoomCode } from "../utils/helper";
 import { useState } from "react";
 import IconButton from "./Buttons/IconButton";
 import { useNavigate } from "react-router-dom";
+import { useWebSocket } from "../contexts/WebSocket";
 
 function HomeContent() {
   const [roomCode, setRoomCode] = useState("");
   const [input, setInput] = useState("");
   const navigate = useNavigate();
 
+  const {status, sendMessage } = useWebSocket();
+
   function handleCreateRoom() {
     const newCode = generateRoomCode();
     setRoomCode(newCode);
-    setInput(newCode); // now this will work correctly
+    setInput(newCode);
+
+    if (status === "open") {
+      const data: SocketModel = {
+        type: "create",
+        payload: { roomCode: newCode },
+      };
+      sendMessage(data);
+    } else {
+      alert("WebSocket is not connected yet!");
+    }
   }
 
   function handleOnChange(val: string) {
@@ -31,7 +44,17 @@ function HomeContent() {
       alert("Please fill required");
       return;
     }
-    navigate("chat", { replace: true });
+    if (status === "open") {
+      console.log("SENDING JOIN REQUEST----", input);
+      const data: SocketModel = {
+        type: "join",
+        payload: { roomCode: input },
+      };
+      sendMessage(data);
+      navigate("chat");
+    } else {
+      alert("WebSocket is not connected.");
+    }
   }
 
   return (
@@ -39,7 +62,7 @@ function HomeContent() {
       <div className="flex gap-x-1.5 items-center ">
         <MessageCircle />
 
-        <h4 className="text-xl">
+        <h4 className="text-lg md:text-xl transition-all duration-500">
           <b>{APPNAME}</b> Unfiltered conversations, real-time
         </h4>
       </div>
@@ -60,13 +83,12 @@ function HomeContent() {
             <span className="text-xs text-gray-500 dark:text-gray-400">
               Your Room Code
             </span>
-            <h3 className="font-mono text-2xl font-semibold tracking-widest text-gray-900 dark:text-white">
+            <h3 className="font-mono text-2xl font-semibold tracking-[0.4rem] text-gray-900 dark:text-white">
               {roomCode}
             </h3>
           </div>
           <IconButton
             icon={<Clipboard className="h-5 w-5" />}
-            
             onClick={() => {
               navigator.clipboard.writeText(roomCode);
               alert("Room code copied!");

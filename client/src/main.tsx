@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { Layout } from "./components";
 import { Chat, Home } from "./pages";
+import { WebSocketProvider } from "./contexts/WebSocket";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +22,8 @@ const router = createBrowserRouter(
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router}/>
+    <WebSocketProvider>
+      <RouterProvider router={router} />
+    </WebSocketProvider>
   </StrictMode>
 );
