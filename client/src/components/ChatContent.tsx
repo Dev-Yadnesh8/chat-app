@@ -15,7 +15,9 @@ function ChatContent() {
   const { ws, status, sendMessage, lastMessage } = useWebSocket();
 
   useEffect(() => {
+    console.log("last message -- ",lastMessage);
     if (!lastMessage) return;
+    
 
     const { type, payload } = lastMessage;
 
