@@ -100,7 +100,25 @@ wss.on("connection", (socket) => {
             users: sockets.length,
           },
         };
+
         socket.send(JSON.stringify(response));
+        // Broadcast to others in the room (except the one who just joined)
+        if (!roomLimitReached) {
+          sockets.forEach((sock) => {
+            if (sock !== socket) {
+              sock.send(
+                JSON.stringify({
+                  type: "info",
+                  payload: {
+                    roomCode: room,
+                    message: "A new user has joined",
+                    users: sockets.length,
+                  },
+                })
+              );
+            }
+          });
+        }
 
         break;
       }
