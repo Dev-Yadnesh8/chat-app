@@ -11,7 +11,7 @@ type websocketsType = Record<string, WebSocket[]>; // { 'room1code':[socket1,soc
 let allSockets: websocketsType = {};
 
 interface SocketModel {
-  type: "create" | "join" | "chat" | "error" | "info" | "close";
+  type: "create" | "join" | "chat" | "error" | "info" | "leave";
   payload: {
     roomCode: string;
     message?: string;
@@ -140,6 +140,30 @@ wss.on("connection", (socket) => {
             client.send(JSON.stringify(chat));
           }
         });
+        break;
+      }
+
+      case "leave": {
+        allSockets[room] = allSockets[room]?.filter((user) => user !== socket);
+        const leave: SocketModel = {
+          type: "info",
+          payload: {
+            roomCode: room,
+            message: "user left room",
+            users: allSockets[room].length,
+          },
+        };
+
+        allSockets[room].forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(leave));
+          }
+        });
+
+        if (allSockets[room].length === 0) {
+          delete allSockets[room];
+        }
+
         break;
       }
 

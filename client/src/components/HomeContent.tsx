@@ -13,14 +13,13 @@ function HomeContent() {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
 
-  const {status, sendMessage,lastMessage } = useWebSocket();
+  const { status, sendMessage, lastMessage } = useWebSocket();
 
   function handleCreateRoom() {
-    const newCode = generateRoomCode();
-    setRoomCode(newCode);
-    setInput(newCode);
-
     if (status === "open") {
+      const newCode = generateRoomCode();
+      setRoomCode(newCode);
+      setInput(newCode);
       const data: SocketModel = {
         type: "create",
         payload: { roomCode: newCode },
@@ -51,14 +50,19 @@ function HomeContent() {
         payload: { roomCode: input },
       };
       sendMessage(data);
-      console.log("Last message before the check",lastMessage);
-      
-      if(!lastMessage){
-           console.log("Last message inside the check",lastMessage);
-        navigate("chat");
-        return;
+      console.log("Last message before the check", lastMessage);
+
+      if (lastMessage) {
+        const { type, payload } = lastMessage;
+        if (type === "error") {
+          alert(payload.message);
+          return;
+        } else{
+          console.log("Last message inside the check", lastMessage);
+          navigate("chat");
+
+        }
       }
-      alert(lastMessage.payload.message);
     } else {
       alert("WebSocket is not connected.");
     }
