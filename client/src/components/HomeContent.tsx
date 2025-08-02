@@ -39,7 +39,7 @@ function HomeContent() {
     setInput("");
   }
 
-  // 🔁 Reactive effect for WebSocket responses
+
   useEffect(() => {
     if (!lastMessage) return;
 
@@ -49,6 +49,8 @@ function HomeContent() {
       toast.error(payload.message);
     } else if (type === "info") {
       console.log("Received info message from server:", payload.message);
+      localStorage.setItem("roomCode",input);
+      localStorage.setItem("rejoined","0");
       navigate("chat");
     }
   }, [lastMessage, navigate]);

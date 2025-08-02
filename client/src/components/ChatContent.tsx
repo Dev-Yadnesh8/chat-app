@@ -17,7 +17,24 @@ function ChatContent() {
   const [chat, setChat] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  const { sendMessage, lastMessage } = useWebSocket();
+  const { status, sendMessage, lastMessage } = useWebSocket();
+
+  useEffect(() => {
+    const savedRoom = localStorage.getItem("roomCode");
+
+    if (!savedRoom) return;
+    if (status === "open") {
+      console.log("SENDIONG REJOIN REQ");
+
+      const data: SocketModel = {
+        type: "join",
+        payload: { roomCode: savedRoom },
+      };
+      sendMessage(data);
+      const localChat = JSON.parse(localStorage.getItem("chat") ?? "[]");
+      setChat(localChat || []);
+    }
+  }, [status]);
 
   const handleSocketEvents = useCallback(() => {
     console.log("last message -- ", lastMessage);
@@ -33,7 +50,12 @@ function ChatContent() {
 
     if (type === "chat") {
       // push message to local chat state
-      setChat((prev) => [...prev, payload.message]);
+      setChat((prev) => {
+        const updatedChat = [...prev, payload.message];
+        localStorage.setItem("chat", JSON.stringify(updatedChat));
+        return updatedChat;
+      });
+
     }
 
     if (type === "error") {
@@ -65,7 +87,11 @@ function ChatContent() {
         message: input,
       },
     };
+
     sendMessage(data);
+    // console.log([...chat, input]);
+
+    // localStorage.setItem("chat", JSON.stringify(chat));
     handleOnClear();
   }
 
@@ -77,6 +103,7 @@ function ChatContent() {
       },
     };
     sendMessage(data);
+    localStorage.removeItem("roomCode");
     navigate(-1);
   }
   return (
