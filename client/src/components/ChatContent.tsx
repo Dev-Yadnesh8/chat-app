@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Button from "./Buttons/Button";
 import Container from "./Container";
 import InputField from "./InputField";
@@ -8,6 +8,7 @@ import Message from "./Message";
 import IconButton from "./Buttons/IconButton";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function ChatContent() {
   const [input, setInput] = useState("");
@@ -16,9 +17,9 @@ function ChatContent() {
   const [chat, setChat] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  const { ws, status, sendMessage, lastMessage } = useWebSocket();
+  const { sendMessage, lastMessage } = useWebSocket();
 
-  useEffect(() => {
+  const handleSocketEvents = useCallback(() => {
     console.log("last message -- ", lastMessage);
     if (!lastMessage) return;
 
@@ -27,7 +28,7 @@ function ChatContent() {
     if (type === "info") {
       setRoomCode(payload.roomCode);
       setUsersConnected(payload.users);
-      alert(payload.message);
+      toast.success(payload.message);
     }
 
     if (type === "chat") {
@@ -36,8 +37,12 @@ function ChatContent() {
     }
 
     if (type === "error") {
-      alert(payload.message);
+      toast.error(payload.message);
     }
+  }, [lastMessage]);
+
+  useEffect(() => {
+    handleSocketEvents();
   }, [lastMessage]);
 
   function handleOnChange(val: string) {
@@ -50,7 +55,7 @@ function ChatContent() {
 
   function handleSendMessage() {
     if (input.trim() === "" || input.length <= 0) {
-      alert("Please fill required");
+      toast.error("cannot send empty message");
       return;
     }
     const data: SocketModel = {
@@ -72,7 +77,7 @@ function ChatContent() {
       },
     };
     sendMessage(data);
-    navigate("/", { replace: true });
+    navigate(-1);
   }
   return (
     <>
@@ -91,8 +96,8 @@ function ChatContent() {
         className="grow flex-1 overflow-y-auto"
         child={
           <div className="h-[500px] p-3.5">
-            {chat.map((e,index) => (
-              <Message key={index+Date.now()} message={e} />
+            {chat.map((e, index) => (
+              <Message key={index} message={e} />
             ))}
           </div>
         }

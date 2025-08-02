@@ -3,10 +3,11 @@ import Button from "./Buttons/Button";
 import InputField from "./InputField";
 import { APPNAME, type SocketModel } from "../utils/constants";
 import { generateRoomCode } from "../utils/helper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IconButton from "./Buttons/IconButton";
 import { useNavigate } from "react-router-dom";
 import { useWebSocket } from "../contexts/WebSocket";
+import toast from "react-hot-toast";
 
 function HomeContent() {
   const [roomCode, setRoomCode] = useState("");
@@ -38,11 +39,26 @@ function HomeContent() {
     setInput("");
   }
 
+  // 🔁 Reactive effect for WebSocket responses
+  useEffect(() => {
+    if (!lastMessage) return;
+
+    const { type, payload } = lastMessage;
+
+    if (type === "error") {
+      toast.error(payload.message);
+    } else if (type === "info") {
+      console.log("Received info message from server:", payload.message);
+      navigate("chat");
+    }
+  }, [lastMessage, navigate]);
+
   function handleJoinRoom() {
     if (input.trim() === "" || input.length <= 0) {
-      alert("Please fill required");
+      toast.error("Room code cannot be empty!!");
       return;
     }
+
     if (status === "open") {
       console.log("SENDING JOIN REQUEST----", input);
       const data: SocketModel = {
@@ -50,21 +66,6 @@ function HomeContent() {
         payload: { roomCode: input },
       };
       sendMessage(data);
-      console.log("Last message before the check", lastMessage);
-
-      if (lastMessage) {
-        const { type, payload } = lastMessage;
-        if (type === "error") {
-          alert(payload.message);
-          return;
-        } else{
-          console.log("Last message inside the check", lastMessage);
-          navigate("chat");
-
-        }
-      }
-    } else {
-      alert("WebSocket is not connected.");
     }
   }
 

@@ -71,6 +71,8 @@ wss.on("connection", (socket) => {
       }
 
       case "join": {
+        console.log("Join req on ",room);
+        
         if (!allSockets[room]) {
           const response: SocketModel = {
             type: "error",
@@ -144,6 +146,7 @@ wss.on("connection", (socket) => {
       }
 
       case "leave": {
+        if(!allSockets[room]) return;
         allSockets[room] = allSockets[room]?.filter((user) => user !== socket);
         const leave: SocketModel = {
           type: "info",
